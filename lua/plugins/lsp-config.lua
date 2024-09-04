@@ -7,6 +7,13 @@ return {
 		end,
 	},
 	{
+		"jay-babu/mason-nvim-dap.nvim",
+		lazy = false,
+		config = function()
+			require("mason-nvim-dap").setup()
+		end,
+	},
+	{
 		"williamboman/mason-lspconfig.nvim",
 		lazy = false,
 		opts = {
