@@ -7,13 +7,6 @@ return {
 		end,
 	},
 	{
-		"jay-babu/mason-nvim-dap.nvim",
-		lazy = false,
-		config = function()
-			require("mason-nvim-dap").setup()
-		end,
-	},
-	{
 		"williamboman/mason-lspconfig.nvim",
 		lazy = false,
 		opts = {
@@ -48,6 +41,9 @@ return {
 				capabilities = capabilities,
 			})
 			lspconfig.asm_lsp.setup({
+				capabilities = capabilities,
+			})
+			lspconfig.clangd.setup({
 				capabilities = capabilities,
 			})
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, {})

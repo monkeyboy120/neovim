@@ -3,12 +3,18 @@ return {
 	dependencies = {
 		"rcarriga/nvim-dap-ui",
 		"nvim-neotest/nvim-nio",
+		"theHamsta/nvim-dap-virtual-text",
+		"jay-baba/mason-nvim-dap.nvim"
 	},
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
 
 		require("dapui").setup()
+		require("nvim-dap-virtual-text").setup()
+		require("mason-nvim-dap").setup({
+			ensure_installed = { " codelldb " },
+		})
 
 		dap.adapters.gdp = {
 			type = "executable",
@@ -16,10 +22,19 @@ return {
 			args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
 		}
 
+		dap.adapters.lldb = {
+			type = "server",
+			port = "${port}",
+			executable = {
+				command = "~/.local/share/nvim/mason/bin/codelldb",
+				args = { "--port", "${port}" },
+			},
+		}
+
 		dap.configurations.cpp = {
 			{
 				name = "Launch",
-				type = "gdb",
+				type = "lldb",
 				request = "launch",
 				program = function()
 					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
@@ -29,7 +44,7 @@ return {
 			},
 			{
 				name = "Select and attach to process",
-				type = "gdb",
+				type = "lldb",
 				request = "attach",
 				program = function()
 					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
@@ -42,7 +57,7 @@ return {
 			},
 			{
 				name = "Attach to gdbserver :1234",
-				type = "gdb",
+				type = "lldb",
 				request = "attach",
 				target = "localhost:1234",
 				program = function()
@@ -52,41 +67,7 @@ return {
 			},
 		}
 
-		dap.configurations.rust = {
-			{
-				name = "Launch",
-				type = "gdb",
-				request = "launch",
-				program = function()
-					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-				end,
-				cwd = "${workspaceFolder}",
-				stopAtBeginningOfMainSubprogram = false,
-			},
-			{
-				name = "Select and attach to process",
-				type = "gdb",
-				request = "attach",
-				program = function()
-					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-				end,
-				pid = function()
-					local name = vim.fn.input("Executable name (filter): ")
-					return require("dap.utils").pick_process({ filter = name })
-				end,
-				cwd = "${workspaceFolder}",
-			},
-			{
-				name = "Attach to gdbserver :1234",
-				type = "gdb",
-				request = "attach",
-				target = "localhost:1234",
-				program = function()
-					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-				end,
-				cwd = "${workspaceFolder}",
-			},
-		}
+		dap.configurations.rust = dap.configurations.cpp
 
 		dap.listeners.before.attach.dapui_config = function()
 			dapui.open()
