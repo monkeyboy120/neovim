@@ -9,6 +9,11 @@ return {
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
+		local pickers = require("telescope.pickers")
+		local finders = require("telescope.finders")
+		local conf = require("telescope.config").values
+		local actions = require("telescope.actions")
+		local action_state = require("telescope.actions.state")
 
 		require("dapui").setup()
 		require("nvim-dap-virtual-text").setup({
@@ -35,14 +40,32 @@ return {
 
 		dap.configurations.cpp = {
 			{
-				name = "Launch",
+				name = "Launch an executable",
 				type = "lldb",
 				request = "launch",
-				program = function()
-					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-				end,
 				cwd = "${workspaceFolder}",
-				args = {},
+				program = function()
+					return coroutine.create(function(coro)
+						local opts = {}
+						pickers
+							.new(opts, {
+								prompt_title = "Path to executable",
+								finder = finders.new_oneshot_job(
+									{ "fd", "--hidden", "--no-ignore", "--type", "x" },
+									{}
+								),
+								sorter = conf.generic_sorter(opts),
+								attach_mappings = function(buffer_number)
+									actions.select_default:replace(function()
+										actions.close(buffer_number)
+										coroutine.resume(coro, action_state.get_selected_entry()[1])
+									end)
+									return true
+								end,
+							})
+							:find()
+					end)
+				end,
 			},
 		}
 
@@ -61,8 +84,7 @@ return {
 
 		-- Keybindings for debugging
 		vim.keymap.set("n", "<Leader>dt", ":DapToggleBreakpoint<CR>")
-		vim.keymap.set("n", "<Leader>dC", ":DapToggleConditionalBreakopint<CR")
-		vim.keymap.set("n", "<Leader>dk", ":DapToggleAllBreakpoints<CR>")
+
 		vim.keymap.set("n", "<Leader>dc", ":DapContinue<CR>")
 		vim.keymap.set("n", "<Leader>dx", ":DapTerminate<CR>")
 		vim.keymap.set("n", "<Leader>do", ":DapStepOver<CR>")
