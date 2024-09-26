@@ -51,7 +51,7 @@ return {
 						    .new(opts, {
 							    prompt_title = "Path to executable",
 							    finder = finders.new_oneshot_job(
-							    { "find", ".", "-type", "f", "-perm", "+111" }, {}),
+							    { "find", ".", "-type", "f", "-perm", "/111" }, {}),
 							    sorter = conf.generic_sorter(opts),
 							    attach_mappings = function(buffer_number)
 								    actions.select_default:replace(function()
