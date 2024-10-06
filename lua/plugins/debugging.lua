@@ -37,33 +37,21 @@ return {
 				args = { "--port", "${port}" },
 			},
 		}
-
 		dap.configurations.cpp = {
 			{
-				name = "Launch an executable",
+				name = "Launch file",
 				type = "lldb",
 				request = "launch",
-				cwd = "${workspaceFolder}",
 				program = function()
-					return coroutine.create(function(coro)
-						local opts = {}
-						pickers
-						    .new(opts, {
-							    prompt_title = "Path to executable",
-							    finder = finders.new_oneshot_job(
-							    { "find", ".", "-type", "f", "-perm", "/111" }, {}),
-							    sorter = conf.generic_sorter(opts),
-							    attach_mappings = function(buffer_number)
-								    actions.select_default:replace(function()
-									    actions.close(buffer_number)
-									    coroutine.resume(coro,
-										    action_state.get_selected_entry()[1])
-								    end)
-								    return true
-							    end,
-						    })
-						    :find()
-					end)
+					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+				end,
+				cwd = "${workspaceFolder}",
+				stopOnEntry = false,
+				args = function()
+					-- Ask the user for arguments
+					local input = vim.fn.input("Program arguments: ")
+					-- Split the input string into a table of arguments
+					return vim.split(input, " ")
 				end,
 			},
 		}
