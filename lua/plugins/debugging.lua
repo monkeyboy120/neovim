@@ -9,11 +9,6 @@ return {
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
-		local pickers = require("telescope.pickers")
-		local finders = require("telescope.finders")
-		local conf = require("telescope.config").values
-		local actions = require("telescope.actions")
-		local action_state = require("telescope.actions.state")
 
 		require("dapui").setup()
 		require("nvim-dap-virtual-text").setup({
@@ -37,6 +32,7 @@ return {
 				args = { "--port", "${port}" },
 			},
 		}
+
 		dap.configurations.cpp = {
 			{
 				name = "Launch file",
