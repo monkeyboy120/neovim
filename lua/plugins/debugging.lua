@@ -9,7 +9,6 @@ return {
 	config = function()
 		local dap = require("dap")
 		local dapui = require("dapui")
-
 		require("dapui").setup()
 		require("nvim-dap-virtual-text").setup({
 			enabled = true,
@@ -52,7 +51,19 @@ return {
 			},
 		}
 
-		dap.configurations.c = dap.configurations.cpp
+		dap.configurations.c = {
+			{
+				name = "Launch file",
+				type = "lldb",
+				request = "launch",
+				program = function()
+					return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+				end,
+				cwd = "${workspaceFolder}",
+				stopOnEntry = false,
+				args = {},
+			},
+		}
 
 		dap.configurations.rust = dap.configurations.cpp
 

@@ -10,7 +10,7 @@ vim.api.nvim_set_option("clipboard", "unnamedplus")
 
 -- Set tab width to 2 spaces for C++ files
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "cpp", "hpp" },
+	pattern = { "cpp", "hpp", "c", "h" },
 	command = "setlocal tabstop=2 shiftwidth=2 expandtab",
 })
 
