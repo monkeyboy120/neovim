@@ -52,6 +52,8 @@ return {
 			},
 		}
 
+		dap.configurations.c = dap.configurations.cpp
+
 		dap.configurations.rust = dap.configurations.cpp
 
 		-- DAP UI listeners to open/close automatically

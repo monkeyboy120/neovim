@@ -14,7 +14,22 @@ vim.api.nvim_create_autocmd("FileType", {
 	command = "setlocal tabstop=2 shiftwidth=2 expandtab",
 })
 
-vim.cmd("autocmd BufNewFile,BufRead let b:copilot_enabled=0")
+-- Disable Copilot globally by default
+vim.g.copilot_enabled = false
+
+-- Function to toggle Copilot manually
+vim.api.nvim_create_user_command("EnableCopilot", function()
+	vim.g.copilot_enabled = true
+	vim.cmd("Copilot enable")
+end, {})
+
+vim.api.nvim_create_user_command("DisableCopilot", function()
+	vim.g.copilot_enabled = false
+	vim.cmd("Copilot disable")
+end, {})
+
+-- Ensure Copilot is disabled for all buffers by default
+vim.cmd("autocmd BufNewFile,BufRead * Copilot disable")
 
 vim.cmd("autocmd BufEnter * set formatoptions-=cro")
 vim.cmd("autocmd BufEnter * setlocal formatoptions-=cro")
