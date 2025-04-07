@@ -39,21 +39,13 @@ return {
 	},
 	config = function(_, opts)
 		require("ufo").setup(opts)
-
-		-- Leader-based keymaps for folding
+		-- Keymaps for folding:
 		vim.keymap.set("n", "<leader>fo", require("ufo").openAllFolds, { desc = "Open all folds" })
 		vim.keymap.set("n", "<leader>fc", require("ufo").closeAllFolds, { desc = "Close all folds" })
-		vim.keymap.set("n", "<leader>fe", require("ufo").openFoldsExceptKinds, { desc = "Open folds (except kinds)" })
-		vim.keymap.set("n", "<leader>fx", require("ufo").closeFoldsWith, { desc = "Close folds (by kind)" })
-		vim.keymap.set("n", "<leader>o", function()
-			local lnum = vim.fn.foldclosed(".")
-			if lnum ~= -1 then
-				require("ufo").openFoldsExceptKinds(lnum)
-			else
-				-- Fallback: if no closed fold is detected, simply run the built-in command.
-				vim.cmd("normal! zo")
-			end
-		end, { desc = "Open fold under cursor" })
+
+		-- Close the current fold using the provided command from nvim-ufo.
+		-- This command will close the fold under the cursor.
+		vim.keymap.set("n", "<leader>cf", "<cmd>UfoCloseFold<CR>", { desc = "Close current fold" })
 
 		-- Optional: Set fold options for Neovim
 		vim.o.foldcolumn = "1" -- Display fold column
