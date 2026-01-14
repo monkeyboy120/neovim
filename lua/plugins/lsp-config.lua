@@ -1,63 +1,59 @@
 return {
 	{
-		"williamboman/mason.nvim",
+		"mason-org/mason.nvim",
 		lazy = false,
-		config = function()
-			require("mason").setup()
-		end,
+		opts = {},
 	},
+
 	{
-		"williamboman/mason-lspconfig.nvim",
+		"mason-org/mason-lspconfig.nvim",
 		lazy = false,
+		dependencies = {
+			"mason-org/mason.nvim",
+			"neovim/nvim-lspconfig",
+		},
 		opts = {
-			auto_install = true,
+			ensure_installed = {
+				"lua_ls",
+				"clangd",
+			},
+			automatic_enable = true,
 		},
 	},
+
 	{
 		"neovim/nvim-lspconfig",
 		lazy = false,
 		config = function()
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-			local lspconfig = require("lspconfig")
-			lspconfig.lua_ls.setup({
-				capabilities = capabilities,
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			local ok, cmp = pcall(require, "cmp_nvim_lsp")
+			if ok then
+				capabilities = cmp.default_capabilities(capabilities)
+			end
+
+			local servers = {
+				lua_ls = {},
+				clangd = {},
+			}
+
+			for name, cfg in pairs(servers) do
+				cfg.capabilities = capabilities
+				vim.lsp.config(name, cfg)
+			end
+
+			vim.lsp.enable(vim.tbl_keys(servers))
+
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					local opts = { buffer = args.buf }
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+					vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+					vim.keymap.set("n", "<leader>S", ":ClangdSwitchSourceHeader<CR>", opts)
+				end,
 			})
-			lspconfig.astro.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.cssls.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.html.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.rust_analyzer.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.r_language_server.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.asm_lsp.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.clangd.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.zls.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.hls_checker.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.verible.setup({
-				capabilities = capabilities,
-			})
-			vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
-			vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
-			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, {})
-			vim.keymap.set("n", "gi", vim.lsp.buf.implementation, {})
-			vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, {})
-			vim.keymap.set("n", "<leader>S", ":ClangdSwitchSourceHeader<CR>", {})
 		end,
 	},
 }
