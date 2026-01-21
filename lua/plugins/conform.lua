@@ -37,9 +37,6 @@ return {
 					if mason_registry.is_installed("zigfmt") then
 						table.insert(formatters_by_ft.zig, "zigfmt")
 					end
-					if mason_registry.is_installed("verible") then
-						table.insert(formatters_by_ft.verilog, "verible")
-					end
 				else
 					-- Fallback configuration if Mason isn't installed
 					formatters_by_ft.lua = { "stylua" }
