@@ -1,8 +1,8 @@
 -- lua/plugins/rose-pine.lua
 return {
-	"rose-pine/neovim",
-	name = "rose-pine",
+	"savq/melange-nvim",
+	name = "melange",
 	config = function()
-		vim.cmd("colorscheme rose-pine")
+		vim.cmd("colorscheme melange")
 	end,
 }
