@@ -1,14 +1,16 @@
 return {
 	"mfussenegger/nvim-dap",
+	lazy = false,
 	dependencies = {
-		"rcarriga/nvim-dap-ui",
-		"nvim-neotest/nvim-nio",
-		"theHamsta/nvim-dap-virtual-text",
-		"jay-babu/mason-nvim-dap.nvim",
-		"williamboman/mason.nvim",
+		{ "rcarriga/nvim-dap-ui", lazy = false },
+		{ "nvim-neotest/nvim-nio", lazy = false },
+		{ "theHamsta/nvim-dap-virtual-text", lazy = false },
+		{ "jay-babu/mason-nvim-dap.nvim", lazy = false },
+		{ "williamboman/mason.nvim", lazy = false },
 	},
 	config = function()
 		local dap = require("dap")
+		require("nio")
 		local dapui = require("dapui")
 
 		-- Helpful while setting up; you can change to "INFO" later
