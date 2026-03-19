@@ -16,6 +16,7 @@ return {
 			ensure_installed = {
 				"lua_ls",
 				"clangd",
+				"rust_analyzer",
 			},
 			automatic_enable = true,
 		},
@@ -34,6 +35,21 @@ return {
 			local servers = {
 				lua_ls = {},
 				clangd = {},
+				rust_analyzer = {
+					settings = {
+						["rust-analyzer"] = {
+							cargo = {
+								allFeatures = true,
+							},
+							checkOnSave = {
+								command = "clippy",
+							},
+							procMacro = {
+								enable = true,
+							},
+						},
+					},
+				},
 			}
 
 			for name, cfg in pairs(servers) do
@@ -46,12 +62,17 @@ return {
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(args)
 					local opts = { buffer = args.buf }
+					local client = vim.lsp.get_client_by_id(args.data.client_id)
+
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
 					vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
-					vim.keymap.set("n", "<leader>S", ":ClangdSwitchSourceHeader<CR>", opts)
+
+					if client and client.name == "clangd" then
+						vim.keymap.set("n", "<leader>S", ":ClangdSwitchSourceHeader<CR>", opts)
+					end
 				end,
 			})
 		end,
